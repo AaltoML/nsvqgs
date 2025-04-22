@@ -1,3 +1,4 @@
+# Code modified based on NeRFstudio: https://github.com/nerfstudio-project/gsplat/blob/main/examples/datasets/download_dataset.py
 """Script to download benchmark dataset(s)"""
 
 import os
@@ -109,11 +110,11 @@ if __name__ == '__main__':
     save_dir = Path(os.getcwd() + "/data")
     dd = DownloadData(save_dir)
     print(save_dir)
-    # # download MipNeRF360 dataset
-    # ds = "mipnerf360"
-    # if not os.path.isdir(save_dir/ds):
-    #     print('Downloading [MipNeRF360] now...')
-    #     dd.dataset_download(ds)
+    # download MipNeRF360 dataset
+    ds = "mipnerf360"
+    if not os.path.isdir(save_dir/ds):
+        print('Downloading [MipNeRF360] now...')
+        dd.dataset_download(ds)
     
     # download "Tank and Template" and "Deep Blending" datasets
     ds = "tandt"
