@@ -77,6 +77,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
     if checkpoint:
         (model_params, first_iter) = torch.load(checkpoint)
         if not args.no_load_cb:
+            print('load codebook from the checkpoint')
             gaussians.restore(model_params, opt)
         else:
             print('Don\'t load codebook, use the random one')
@@ -388,8 +389,6 @@ if __name__ == "__main__":
     parser.add_argument('--fine_tune', action='store_true', default=False, help='if true, fine tuning the final 3000 iterations.')
     parser.add_argument('--cb_lr_times', type=float, default=1, help='the times of learning rate in codebook')
     parser.add_argument('--no_visible_module', action='store_true', default=False, help='if true, get all visible gaussians for training NSVQ')
-
-
 
     args = parser.parse_args(sys.argv[1:])
     print("Optimizing " + args.model_path)

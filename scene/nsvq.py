@@ -132,13 +132,13 @@ class QuantizationModule(torch.nn.Module):
         np.save(os.path.join(path, 'vq_args.npy'), vq_args)
         torch.save(codebook, os.path.join(path, 'codebook.pth'))
         
-        files = [os.path.join(path, f) for f in ['vq_inds.bin', 'vq_args.npy', 'codebook.pth', 'point_cloud.ply'] ]
-        file_sizes = [os.path.getsize(f) for f in files]
-        assert len(file_sizes) ==4, "the number of files (save codebook) is incorrect"
-        num_gs = (self.indices[quant_params[0]]).shape[0]
-        info = {'model_size': sum(file_sizes), 'num_gs': num_gs}
-        with open(os.path.join(path + "/gs_info.json"), 'w') as fp:
-            json.dump(info, fp, indent=True)
+        # files = [os.path.join(path, f) for f in ['vq_inds.bin', 'vq_args.npy', 'codebook.pth', 'point_cloud.ply'] ]
+        # file_sizes = [os.path.getsize(f) for f in files]
+        # assert len(file_sizes) ==4, "the number of files (save codebook) is incorrect"
+        # num_gs = (self.indices[quant_params[0]]).shape[0]
+        # info = {'model_size': sum(file_sizes), 'num_gs': num_gs}
+        # with open(os.path.join(path, "gs_info.json"), 'w') as fp:
+        #     json.dump(info, fp, indent=True)
         
     def _dec2binary(self, x, n_bits=None):
         """Convert decimal integer x to binary.

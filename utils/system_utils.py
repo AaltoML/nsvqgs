@@ -12,7 +12,7 @@
 from errno import EEXIST
 from os import makedirs, path
 import os
-
+import zipfile
 def mkdir_p(folder_path):
     # Creates a directory. equivalent to using mkdir -p on the command line
     try:
@@ -26,3 +26,15 @@ def mkdir_p(folder_path):
 def searchForMaxIteration(folder):
     saved_iters = [int(fname.split("_")[-1]) for fname in os.listdir(folder)]
     return max(saved_iters)
+
+def zip_files(zip_name, dir_path, files):
+    ''' compress a list of files into a zipfile '''
+    with zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for file in files:
+            file_path = os.path.join(dir_path, file)
+            # arcname = os.path.relpath(file_path, dir_path)
+            zipf.write(file_path, file)
+            
+def unzip_file(zip_path, extract_to):
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_to)
