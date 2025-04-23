@@ -177,12 +177,6 @@ class NSVQ(torch.nn.Module):
         self.eps = 1e-12
         self.activation = None
         self.inverse_activation = None
-        self.activation_init = args.activation_init
-        self.activation_distance = args.activation_distance
-        if self.activation_init:
-            print('activation initialization in cb')
-        if self.activation_distance:
-            print('activation distance in cb')
 
         if initialization == 'normal':
             codebooks = torch.randn(self.num_embeddings, self.embedding_dim, device=device)
@@ -209,19 +203,12 @@ class NSVQ(torch.nn.Module):
     def codebooks_initialisation(self, input_data, mode = 'basic'):
         '''codebook initialized from input data'''
         print(f'initialize codes for attributes: {self.name}')
-        if self.activation_init and self.name =='scale':
-            print(f'acitvation func {self.activation}, {self.inverse_activation}')
-            input = self.activation(input_data)
-        else:
-            input = input_data
+        input = input_data
         with torch.no_grad():
             if mode =='basic':
                 codes = self._cb_init_basic(input)
             elif mode == 'kmeans':
                 codes = self._cb_init_kmeans(input)
-            if self.activation_init and self.name =='scale': 
-                codes = torch.clamp(codes,  min = 10**(-8))
-                codes = self.inverse_activation(codes)
             self.codebooks *= 0
             self.codebooks += codes
         # breakpoint()
@@ -260,10 +247,7 @@ class NSVQ(torch.nn.Module):
         min_indices = []
         for i in range(0, N, step):
             batch_data = input_data[i:i+step]
-            if self.activation_distance and self.name =='scale':
-                distances = torch.cdist(self.activation(batch_data), self.activation(codebooks))
-            else:
-                distances = torch.cdist(batch_data, codebooks)
+            distances = torch.cdist(batch_data, codebooks)
             min_indices.append(torch.argmin(distances, dim=1))
             del distances
         return torch.cat(min_indices, dim=0)

@@ -3,7 +3,7 @@
   # <strong>NSVQ-GS</strong>: Compressing 3D Gaussian Splatting by Noise-Substituted Vector Quantization
 
   <p align="center">
-    <a href="haishan-wang.github.io">Haishan Wang</a> ·
+    <a href="https://haishan-wang.github.io">Haishan Wang</a> ·
     <a href="https://research.aalto.fi/en/persons/mohammad-hassan-vali">Mohammad Vali</a> .
     <a href="https://users.aalto.fi/~asolin/">Arno Solin</a>
   </p>

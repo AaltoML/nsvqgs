@@ -61,7 +61,7 @@ class GaussianModel:
         # out = torch.log(out)
         return scaling
 
-    def __init__(self, sh_degree, optimizer_type="default", module_vq: nn.Module = None, new_activation = False):
+    def __init__(self, sh_degree, optimizer_type="default", module_vq: nn.Module = None):
         self.active_sh_degree = 0
         self.optimizer_type = optimizer_type
         self.max_sh_degree = sh_degree
@@ -86,14 +86,8 @@ class GaussianModel:
         self.module_vq = module_vq
         self.vq_optimizer = None
         
-        if new_activation:
-            print('The activation function for scaling is new!')
-            self.scaling_activation = self._act_scale
-            self.scaling_inverse_activation = self._inverse_act_scale
-        else:
-            self.scaling_activation = torch.exp
-            self.scaling_inverse_activation =  lambda x: torch.log(torch.clamp(x, min = 1e-20))
-        print(f'activation func {self.scaling_activation}, {self.scaling_inverse_activation}')
+        self.scaling_activation = torch.exp
+        self.scaling_inverse_activation =  lambda x: torch.log(torch.clamp(x, min = 1e-20))
         self.setup_functions()
 
     def __str__(self):
