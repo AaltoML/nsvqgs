@@ -21,7 +21,7 @@ from tqdm import tqdm
 from bitarray import bitarray
 from collections import OrderedDict
 
-from utils.system_utils import mkdir_p
+from utils.system_utils import mkdir_p, zip_files, unzip_file
 from plyfile import PlyData, PlyElement
 from utils.sh_utils import RGB2SH
 from simple_knn._C import distCUDA2
@@ -135,8 +135,6 @@ class GaussianModel:
         self.xyz_gradient_accum = xyz_gradient_accum
         self.denom = denom
         self.optimizer.load_state_dict(opt_dict)
-        # ! issue
-        # todo: recover it after debug
         if load_codebook:
             self.module_vq.load_state_dict(vq_dict)
             self.vq_optimizer.load_state_dict(vq_opt_dict)
@@ -379,6 +377,17 @@ class GaussianModel:
         if save_quant:
             print('quantized attributes: ', quant_params)
             self.module_vq.save_binary(quant_params, path)
+            # zip all files to be one single file...
+            zip_path = os.path.join(path,'compressed_model.zip')
+            files = ['vq_inds.bin', 'vq_args.npy', 'codebook.pth', 'point_cloud.ply']
+            zip_files( zip_path, path, files)
+            for file in files:
+                os.remove(os.path.join(path, file))
+            num_gs = (self.module_vq.indices[quant_params[0]]).shape[0]
+            info = {'model_size (in bytes)': os.path.getsize(zip_path), 'num_gs': num_gs}
+            with open(os.path.join(path, "gs_info.json"), 'w') as fp:
+                json.dump(info, fp, indent=True)
+            
 
     def reset_opacity(self):
         opacities_new = self.inverse_opacity_activation(torch.min(self.get_opacity, torch.ones_like(self.get_opacity)*0.01))
@@ -394,6 +403,9 @@ class GaussianModel:
         return torch.sum(mask * b, -1)
     
     def load_ply(self, path, load_quant = False):
+        zip_path = os.path.join(path,'compressed_model.zip')
+        unzip_file(zip_path, path)
+
         plydata = PlyData.read(os.path.join(path, 'point_cloud.ply'))
         quant_params = []
         if load_quant:
@@ -416,6 +428,9 @@ class GaussianModel:
                 ind = np.reshape(bits.tolist(), (-1, n_bit))
                 ind = self._bin2dec(torch.from_numpy(ind), n_bit).cpu().numpy()
                 indices[key] = ind
+            files = ['vq_inds.bin', 'vq_args.npy', 'codebook.pth', 'point_cloud.ply']
+            for file in files:
+                os.remove(os.path.join(path, file))
                 
         
         xyz = np.stack((np.asarray(plydata.elements[0]["x"]),
@@ -470,6 +485,8 @@ class GaussianModel:
         self._scaling = nn.Parameter(torch.tensor(scales, dtype=torch.float, device="cuda").requires_grad_(True))
         self._rotation = nn.Parameter(torch.tensor(rots, dtype=torch.float, device="cuda").requires_grad_(True))
         self.active_sh_degree = self.max_sh_degree
+        
+        
 
 
     def replace_tensor_to_optimizer(self, tensor, name):
