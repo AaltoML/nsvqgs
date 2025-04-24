@@ -50,7 +50,9 @@ pip install submodules/simple-knn
 pip install submodules/fused-ssim
 ```
 ## Data download 
-Running `python scripts/data_download.py`, the script will download the main three datasets: Mip-NeRF360 (9 scenes), Tanks & Temples (2 scenes) and Deep Blending (2 scenes).
+All the data could be downlowded by the following command
+```python scripts/data_download.py```
+The script will download the main three datasets: Mip-NeRF360 (9 scenes), Tanks & Temples (2 scenes) and Deep Blending (2 scenes).
 Note that the data source: Mip-NeRF360 is from [Mip-NeRF 360](https://jonbarron.info/mipnerf360/), Tanks & Temples (2 scenes) and Deep Blending are from [Inria-3DGS](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/).
 
 ### Default settings
@@ -58,10 +60,29 @@ There are some default settings following Inria-3DGS:
 - Data split: Every 8th image must be selected for testing, specifically those images of index i where i mod 8 ≡ 0. All other images are used for training.
 - Resolution: Full-resolution images should be used up to a maximum side length of 1600px. For larger test images, downscaling is required so that the longest dimension is 1600px.
 
-## Training 
+## Example usage
+### Training 
+This is an example command of training NSVQ-GS (4k bitrates) model:
+```
+CUDA_VISIBLE_DEVICES=0 python train_newvq.py  --port 4060 --vq_ncls 4096 --vq_ncls_sh 1024 \
+  --vq_ncls_dc 1024 --vq_start_iter 20000 --quant_params sh dc rot scale --opacity_reg \
+  --lambda_reg 1e-7 --max_prune_iter 20000 --eval -s=${path_source} -m=${path_output} \
+   --total_iterations 45000 --fine_tune
+```
 
+Here `${path_source}` denotes the path of input data, `${path_output}` denotes the path of all output files
 
+### Evaluation
+This is an example command of rendering and evaluating the trained model
+```
+# * rendering
+python render.py -m ${path_output} --iteration 45000 --skip_train --load_quant
 
+# * metrics calculation
+python metrics.py -m ${path_output}
+```
+Here `${path_output}` denotes the path of trained model.
 
-## Evaluation
-
+### Integrated script
+For convenience, we prepare a integrated script to train, render and evaluate NSVQ-GS standalone. you can run it with this command:
+```source scripts/train.sh```
