@@ -4,7 +4,7 @@
 
   <p align="center">
     <a href="https://haishan-wang.github.io">Haishan Wang</a> ·
-    <a href="https://research.aalto.fi/en/persons/mohammad-hassan-vali">Mohammad Vali</a> .
+    <a href="https://research.aalto.fi/en/persons/mohammad-hassan-vali">Mohammad Hassan Vali</a> .
     <a href="https://users.aalto.fi/~asolin/">Arno Solin</a>
   </p>
 
@@ -47,7 +47,6 @@ Then install all submodules by pip.
 ```
 pip install submodules/diff-gaussian-rasterization
 pip install submodules/simple-knn
-pip install submodules/fused-ssim
 ```
 ## Data download 
 All the data could be downlowded by the following command
