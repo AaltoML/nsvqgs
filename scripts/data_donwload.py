@@ -109,15 +109,15 @@ if __name__ == '__main__':
     
     save_dir = Path(os.getcwd() + "/data")
     dd = DownloadData(save_dir)
-    print(save_dir)
-    # download MipNeRF360 dataset
+    print(f'downloading data at {save_dir}')
+    # * download MipNeRF360 dataset
     ds = "mipnerf360"
     if not os.path.isdir(save_dir/ds):
         print('Downloading [MipNeRF360] now...')
         dd.dataset_download(ds)
     
-    # download "Tank and Template" and "Deep Blending" datasets
-    ds = "tandt"
+    # * download "Tank and Template" and "Deep Blending" datasets
+    ds = "tandt_db"
     if not (os.path.isdir(save_dir/ds) and os.path.isdir(f"data/db")):
         print('Downloading [Tank and Template] and [Deep Blending] now...')
         dd.dataset_download("tandt_db")
